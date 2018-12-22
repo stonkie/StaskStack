@@ -17,25 +17,26 @@ namespace ByteAuthor.StaskStack
 	{
 		public static readonly DependencyProperty TasksSourceProperty = DependencyProperty.Register(
 			"TasksSource", typeof(object), typeof(BacklogUserControl), new PropertyMetadata(default(object)));
-		
+
 		public static readonly DependencyProperty IsInEditModeProperty = DependencyProperty.Register(
 			"IsInEditMode", typeof(bool), typeof(BacklogUserControl), new PropertyMetadata(default(bool)));
-		
-		private string _previousText;
 
-		public bool IsInEditMode
-		{
-			get => (bool) GetValue(IsInEditModeProperty);
-			set => SetValue(IsInEditModeProperty, value);
-		}
+		public static readonly DependencyProperty ViewModelMapperProperty = DependencyProperty.Register(
+			"ViewModelMapper", typeof(IViewModelMapper), typeof(BacklogUserControl),
+			new PropertyMetadata(default(IViewModelMapper)));
+
+		private string _previousText;
 
 		public BacklogUserControl()
 		{
 			InitializeComponent();
 		}
 
-		public static readonly DependencyProperty ViewModelMapperProperty = DependencyProperty.Register(
-			"ViewModelMapper", typeof(IViewModelMapper), typeof(BacklogUserControl), new PropertyMetadata(default(IViewModelMapper)));
+		public bool IsInEditMode
+		{
+			get => (bool) GetValue(IsInEditModeProperty);
+			set => SetValue(IsInEditModeProperty, value);
+		}
 
 		public IViewModelMapper ViewModelMapper
 		{
@@ -57,24 +58,23 @@ namespace ByteAuthor.StaskStack
 				taskStepsView.SortDescriptions.Add(new SortDescription(nameof(Step.Order), ListSortDirection.Ascending));
 			}
 		}
-		
+
 		private async Task<(TaskViewModel, StepViewModel)> CreateStepInSelectedBacklogTaskAsync()
 		{
 			if (ListBacklogTasks.SelectedItem is TaskViewModel taskViewModel)
 			{
 				return (taskViewModel, await ViewModelMapper.CreateStepAsync(taskViewModel));
 			}
-			else if (ListBacklogTasks.SelectedItem is StepViewModel stepViewModel)
+
+			if (ListBacklogTasks.SelectedItem is StepViewModel stepViewModel)
 			{
 				TaskViewModel parentTaskViewModel = ViewModelMapper.BacklogTasks.Single(t => t.Steps.Contains(stepViewModel));
 				return (parentTaskViewModel, await ViewModelMapper.CreateStepAsync(parentTaskViewModel, stepViewModel));
 			}
-			else
-			{
-				return (null, null);
-			}
+
+			return (null, null);
 		}
-		
+
 		private async void ListBacklogTasks_OnKeyDown(object sender, KeyEventArgs e)
 		{
 			try
@@ -83,7 +83,8 @@ namespace ByteAuthor.StaskStack
 				{
 					(TaskViewModel parentTask, StepViewModel createdStep) = await CreateStepInSelectedBacklogTaskAsync();
 
-					if (parentTask != null && ListBacklogTasks.ItemContainerGenerator.ContainerFromItem(parentTask) is TreeViewItem parentTaskItem)
+					if (parentTask != null &&
+					    ListBacklogTasks.ItemContainerGenerator.ContainerFromItem(parentTask) is TreeViewItem parentTaskItem)
 					{
 						if (createdStep != null &&
 						    parentTaskItem.ItemContainerGenerator.ContainerFromItem(createdStep) is TreeViewItem immediateStepItem)
@@ -118,7 +119,7 @@ namespace ByteAuthor.StaskStack
 				MessageBox.Show(ex.ToString());
 			}
 		}
-		
+
 		private void TextBlockTaskHeader_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
 			if (FindTreeItem(sender as DependencyObject)?.IsSelected ?? false)
@@ -156,7 +157,7 @@ namespace ByteAuthor.StaskStack
 					{
 						textBox.Text = _previousText;
 					}
-				
+
 					IsInEditMode = false;
 					e.Handled = true;
 					break;
@@ -211,7 +212,7 @@ namespace ByteAuthor.StaskStack
 					{
 						textBox.Text = _previousText;
 					}
-				
+
 					IsInEditMode = false;
 					e.Handled = true;
 					break;
