@@ -21,56 +21,7 @@
 		</Grid.ColumnDefinitions>
 		<StackPanel Grid.Column="0">
 			<TextBlock>Backlog</TextBlock>
-			<TreeView Name="ListBacklogTasks" KeyDown="ListBacklogTasks_OnKeyDown">
-				<TreeView.Resources>
-					<HierarchicalDataTemplate DataType="{x:Type local:TaskViewModel}" ItemsSource="{Binding Path=Steps}">
-						<Grid>
-							<!-- Normal state of the header -->
-							<TextBlock x:Name="TextBlockTaskHeader" Text="{Binding Name}" Margin="3,0" MouseLeftButtonDown="TextBlockTaskHeader_MouseLeftButtonDown"/>
-							<!-- This state is active in the edit mode -->
-							<TextBox x:Name="TextBoxTaskEditableHeader" Visibility="Hidden" MinWidth="100"
-							         Text="{Binding Name, UpdateSourceTrigger=LostFocus}"
-							         LostFocus="TextBoxTaskEditableHeader_LostFocus"
-							         IsVisibleChanged="TextBoxTaskEditableHeader_IsVisibleChanged"
-							         KeyDown="TextBoxTaskEditableHeader_KeyDown"/>
-						</Grid>
-						<!-- With triggers we switch between the three states of the header depending on its focused property and the control-level property "IsInEditMode" -->
-						<HierarchicalDataTemplate.Triggers>
-							<MultiDataTrigger >
-								<!-- Selected, editing is generally active - the text box is displayed -->
-								<MultiDataTrigger.Conditions>
-									<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="True"/>
-									<Condition Binding="{Binding IsInEditMode, ElementName=This}" Value="True"/>
-								</MultiDataTrigger.Conditions>
-								<Setter TargetName="TextBoxTaskEditableHeader" Property="Visibility" Value="Visible" />
-							</MultiDataTrigger>
-						</HierarchicalDataTemplate.Triggers>
-					</HierarchicalDataTemplate>
-					<HierarchicalDataTemplate DataType="{x:Type local:StepViewModel}">
-						<Grid>
-							<!-- Normal state of the header -->
-							<TextBlock x:Name="TextBlockStepHeader" Text="{Binding Description}" Margin="3,0" MouseLeftButtonDown="TextBlockStepHeader_MouseLeftButtonDown"/>
-							<!-- This state is active in the edit mode -->
-							<TextBox x:Name="TextBoxStepEditableHeader" Visibility="Hidden" MinWidth="100"
-							         Text="{Binding Description, UpdateSourceTrigger=LostFocus}"
-							         LostFocus="TextBoxStepEditableHeader_LostFocus"
-							         IsVisibleChanged="TextBoxStepEditableHeader_IsVisibleChanged"
-							         KeyDown="TextBoxStepEditableHeader_KeyDown"/>
-						</Grid>
-						<!-- With triggers we switch between the three states of the header depending on its focused property and the control-level property "IsInEditMode" -->
-						<HierarchicalDataTemplate.Triggers>
-							<MultiDataTrigger >
-								<!-- Selected, editing is generally active - the text box is displayed -->
-								<MultiDataTrigger.Conditions>
-									<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="True"/>
-									<Condition Binding="{Binding IsInEditMode, ElementName=This}" Value="True"/>
-								</MultiDataTrigger.Conditions>
-								<Setter TargetName="TextBoxStepEditableHeader" Property="Visibility" Value="Visible" />
-							</MultiDataTrigger>
-						</HierarchicalDataTemplate.Triggers>
-					</HierarchicalDataTemplate>
-				</TreeView.Resources>
-			</TreeView>
+			<local:BacklogUserControl x:Name="ControlBacklog"></local:BacklogUserControl>
 		</StackPanel>
 		<ListView Name="ListActiveTasks" Grid.Column="1">
 			<ListView.ItemsPanel>

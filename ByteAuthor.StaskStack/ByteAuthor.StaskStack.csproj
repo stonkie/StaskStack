@@ -80,6 +80,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BacklogUserControl.xaml.cs">
+      <DependentUpon>BacklogUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="BooleanInverterConverter.cs" />
     <Compile Include="CacheContext.cs" />
     <Compile Include="CacheContextDbFactory.cs" />
@@ -100,6 +103,10 @@
     <Compile Include="Task.cs" />
     <Compile Include="TaskViewModel.cs" />
     <Compile Include="ValueConverterGroup.cs" />
+    <Page Include="BacklogUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="TaskView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
