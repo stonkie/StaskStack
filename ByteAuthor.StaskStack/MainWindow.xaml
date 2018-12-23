@@ -17,15 +17,17 @@
 				<MenuItem Header="_New Task" Command="{x:Static local:MainWindow.CreateTaskCommand}"></MenuItem>
 			</MenuItem>
 		</Menu>
-	<Grid>
+	<Grid VerticalAlignment="Stretch">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="Auto" />
 			<ColumnDefinition Width="*" />
 		</Grid.ColumnDefinitions>
-		<StackPanel Grid.Column="0">
-			<TextBlock>Backlog</TextBlock>
-			<local:BacklogUserControl x:Name="ControlBacklog"></local:BacklogUserControl>
-		</StackPanel>
+		<Grid.RowDefinitions><RowDefinition Height="*"></RowDefinition></Grid.RowDefinitions>
+		<Grid Grid.Column="0" Grid.Row="0">
+			<Grid.RowDefinitions><RowDefinition Height="Auto"></RowDefinition><RowDefinition Height="*"></RowDefinition></Grid.RowDefinitions>
+			<TextBlock Grid.Row="0">Backlog</TextBlock>
+			<local:BacklogUserControl x:Name="ControlBacklog" Grid.Row="1"></local:BacklogUserControl>
+		</Grid>
 		<ListView Name="ListActiveTasks" Grid.Column="1">
 			<ListView.ItemsPanel>
 				<ItemsPanelTemplate>
