@@ -11,6 +11,7 @@ namespace ByteAuthor.StaskStack
 	{
 		private int _id;
 		private string _name;
+		private double _priority;
 
 		public int Id
 		{
@@ -31,6 +32,17 @@ namespace ByteAuthor.StaskStack
 				if (value == _name) return;
 				_name = value;
 				OnPropertyChanged(nameof(Name));
+			}
+		}
+
+		public double Priority
+		{
+			get => _priority;
+			set
+			{
+				if (value.Equals(_priority)) return;
+				_priority = value;
+				OnPropertyChanged(nameof(Priority));
 			}
 		}
 

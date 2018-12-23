@@ -8,10 +8,13 @@
         Title="MainWindow" Height="450" Width="800"
         Loaded="MainWindow_OnLoaded" d:DataContext="{d:DesignInstance local:MainWindow}"
         Name="This">
+	<Window.CommandBindings>
+		<CommandBinding Command="{x:Static local:MainWindow.CreateTaskCommand}" Executed="CreateTaskCommand_OnExecuted"/>
+	</Window.CommandBindings>
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="_File">
-				<MenuItem Header="_New Task" Click="MenuNewTask_OnClick"></MenuItem>
+				<MenuItem Header="_New Task" Command="{x:Static local:MainWindow.CreateTaskCommand}"></MenuItem>
 			</MenuItem>
 		</Menu>
 	<Grid>

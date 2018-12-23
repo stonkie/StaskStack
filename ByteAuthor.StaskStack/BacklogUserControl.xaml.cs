@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,22 +17,71 @@ namespace ByteAuthor.StaskStack
 	public partial class BacklogUserControl : UserControl
 	{
 		public static readonly DependencyProperty TasksSourceProperty = DependencyProperty.Register(
-			"TasksSource", typeof(object), typeof(BacklogUserControl), new PropertyMetadata(default(object)));
+			"TasksSource", typeof(IEnumerable<TaskViewModel>), typeof(BacklogUserControl), new PropertyMetadata(default(IEnumerable<TaskViewModel>), (sender, args) =>
+			{
+				BacklogUserControl control = sender as BacklogUserControl;
+				if (control != null)
+				{
+					control.TasksSourceChanged?.Invoke(control, EventArgs.Empty);
+				}
+			}));
 
 		public static readonly DependencyProperty IsInEditModeProperty = DependencyProperty.Register(
-			"IsInEditMode", typeof(bool), typeof(BacklogUserControl), new PropertyMetadata(default(bool)));
+			"IsInEditMode", typeof(bool), typeof(BacklogUserControl), new PropertyMetadata(default(bool), (sender, args) =>
+			{
+				BacklogUserControl control = sender as BacklogUserControl;
+				if (control != null)
+				{
+					control.IsInEditModeChanged?.Invoke(control, EventArgs.Empty);
+				}
+			}));
 
 		public static readonly DependencyProperty ViewModelMapperProperty = DependencyProperty.Register(
 			"ViewModelMapper", typeof(IViewModelMapper), typeof(BacklogUserControl),
 			new PropertyMetadata(default(IViewModelMapper)));
 
+		public event EventHandler<EventArgs> TasksSourceChanged;
+		
+		public event EventHandler<EventArgs> IsInEditModeChanged;
+		
 		private string _previousText;
 
 		public BacklogUserControl()
 		{
+			TasksSourceChanged += (sender, args) =>
+			{
+				ListBacklogTasks.ItemsSource = this.TasksSource;
+				ICollectionView backlogTasksView = CollectionViewSource.GetDefaultView(ListBacklogTasks.ItemsSource);
+				backlogTasksView.SortDescriptions.Add(new SortDescription(nameof(Task.Priority), ListSortDirection.Ascending));
+			};
+
+			IsInEditModeChanged += async (sender, args) =>
+			{
+				if (IsInEditMode)
+				{
+					return;
+				}
+
+				try
+				{
+					if (ListBacklogTasks.SelectedItem is TaskViewModel task)
+					{
+						await ViewModelMapper.SaveTaskNameAsync(task);
+					}
+					else if (ListBacklogTasks.SelectedItem is StepViewModel step)
+					{
+						await ViewModelMapper.SaveStepDescriptionAsync(step);
+					}
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show(ex.ToString());
+				}
+			};
+
 			InitializeComponent();
 		}
-
+		
 		public bool IsInEditMode
 		{
 			get => (bool) GetValue(IsInEditModeProperty);
@@ -44,18 +94,38 @@ namespace ByteAuthor.StaskStack
 			set => SetValue(ViewModelMapperProperty, value);
 		}
 
-		public object TasksSource
+		public IEnumerable<TaskViewModel> TasksSource
 		{
-			get => GetValue(TasksSourceProperty);
+			get => GetValue(TasksSourceProperty) as IEnumerable<TaskViewModel>;
 			set => SetValue(TasksSourceProperty, value);
 		}
 
-		public void SelectTask(TaskViewModel task)
+		public TaskViewModel SelectedTask
 		{
-			if (ListBacklogTasks.ItemContainerGenerator.ContainerFromItem(task) is TreeViewItem taskItem)
+			get
 			{
-				ICollectionView taskStepsView = CollectionViewSource.GetDefaultView(taskItem.ItemsSource);
-				taskStepsView.SortDescriptions.Add(new SortDescription(nameof(Step.Order), ListSortDirection.Ascending));
+				if (ListBacklogTasks.SelectedItem is TaskViewModel task)
+				{
+					return task;
+				}
+				else if (ListBacklogTasks.SelectedItem is StepViewModel step)
+				{
+					return ViewModelMapper.BacklogTasks.Single(t => t.Steps.Contains(step));
+				}
+				else
+				{
+					return null;
+				}
+			}
+			set
+			{
+				if (ListBacklogTasks.ItemContainerGenerator.ContainerFromItem(value) is TreeViewItem taskItem)
+				{
+					ICollectionView taskStepsView = CollectionViewSource.GetDefaultView(taskItem.ItemsSource);
+					taskStepsView.SortDescriptions.Add(new SortDescription(nameof(Step.Order), ListSortDirection.Ascending));
+
+					taskItem.IsSelected = true;
+				}
 			}
 		}
 

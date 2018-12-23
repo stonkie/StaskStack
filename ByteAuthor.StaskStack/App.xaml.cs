@@ -48,9 +48,9 @@ namespace ByteAuthor.StaskStack
 	{
 		public override void InitializeDatabase(CacheContext context)
 		{
-			SQLiteConnectionStringBuilder connectionStringBuilder = new SQLiteConnectionStringBuilder(context.Database.Connection.ConnectionString);
-			string filename = connectionStringBuilder.DataSource;
-			File.Delete(filename);
+			//SQLiteConnectionStringBuilder connectionStringBuilder = new SQLiteConnectionStringBuilder(context.Database.Connection.ConnectionString);
+			//string filename = connectionStringBuilder.DataSource;
+			//File.Delete(filename);
 			
 			base.InitializeDatabase(context); 
 		}

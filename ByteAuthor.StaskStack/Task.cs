@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace ByteAuthor.StaskStack
 {
@@ -14,6 +15,6 @@ namespace ByteAuthor.StaskStack
 
 		public bool IsDone { get; set; }
 
-		public ICollection<Step> Steps { get; set; }
+		public ObservableCollection<Step> Steps { get; set; } = new ObservableCollection<Step>();
 	}
 }

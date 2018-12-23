@@ -15,7 +15,7 @@
 					           MouseLeftButtonDown="TextBlockTaskHeader_MouseLeftButtonDown" />
 					<!-- This state is active in the edit mode -->
 					<TextBox x:Name="TextBoxTaskEditableHeader" Visibility="Hidden" MinWidth="100"
-					         Text="{Binding Name, UpdateSourceTrigger=LostFocus}"
+					         Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
 					         LostFocus="TextBoxTaskEditableHeader_LostFocus"
 					         IsVisibleChanged="TextBoxTaskEditableHeader_IsVisibleChanged"
 					         KeyDown="TextBoxTaskEditableHeader_KeyDown" />
@@ -41,7 +41,7 @@
 					           MouseLeftButtonDown="TextBlockStepHeader_MouseLeftButtonDown" />
 					<!-- This state is active in the edit mode -->
 					<TextBox x:Name="TextBoxStepEditableHeader" Visibility="Hidden" MinWidth="100"
-					         Text="{Binding Description, UpdateSourceTrigger=LostFocus}"
+					         Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
 					         LostFocus="TextBoxStepEditableHeader_LostFocus"
 					         IsVisibleChanged="TextBoxStepEditableHeader_IsVisibleChanged"
 					         KeyDown="TextBoxStepEditableHeader_KeyDown" />

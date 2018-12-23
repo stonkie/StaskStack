@@ -1,13 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace ByteAuthor.StaskStack
 {
@@ -16,12 +11,17 @@ namespace ByteAuthor.StaskStack
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		public static readonly RoutedCommand CreateTaskCommand = new RoutedCommand("Create Task", typeof(MainWindow), new InputGestureCollection()
+		{
+			new KeyGesture(Key.N, ModifierKeys.Control),
+		});
+
 		private readonly IViewModelMapper _viewModelMapper;
 
 		public MainWindow(IViewModelMapper viewModelMapper)
 		{
 			_viewModelMapper = viewModelMapper;
-			
+
 			InitializeComponent();
 		}
 
@@ -33,29 +33,25 @@ namespace ByteAuthor.StaskStack
 
 				ControlBacklog.ViewModelMapper = _viewModelMapper;
 				ControlBacklog.TasksSource = _viewModelMapper.BacklogTasks;
-
-				ICollectionView backlogTasksView = CollectionViewSource.GetDefaultView(ControlBacklog.TasksSource);
-				backlogTasksView.SortDescriptions.Add(new SortDescription(nameof(Task.Priority), ListSortDirection.Ascending));
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show(ex.ToString());
 			}
 		}
-
-		private async void MenuNewTask_OnClick(object sender, RoutedEventArgs e)
+		
+		private async void CreateTaskCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
 		{
 			try
 			{
-				TaskViewModel task = await _viewModelMapper.CreateTaskAsync();
+				TaskViewModel task = await _viewModelMapper.CreateTaskAsync(ControlBacklog.SelectedTask);
 
-				ControlBacklog.SelectTask(task);
+				ControlBacklog.SelectedTask = task;
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show(ex.ToString());
 			}
 		}
-
 	}
 }
